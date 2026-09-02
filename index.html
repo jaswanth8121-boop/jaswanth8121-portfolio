@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#050816">
+<title>Jayanth Reddy | AI × IoT Portfolio</title>
+<style>
+:root{
+  --bg:#050816; --panel:rgba(10,18,40,.68); --text:#eef4ff; --muted:#9eacc7;
+  --line:rgba(130,160,255,.18); --accent:#62d8ff; --accent2:#8b6cff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:radial-gradient(circle at 50% -10%,#18245a 0,#080d20 36%,#050816 70%);
+  color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;
+  overflow-x:hidden;line-height:1.6;
+}
+canvas#scene{position:fixed;inset:0;z-index:-2}
+.noise{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.035;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+nav{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:20;
+  width:min(1100px,92%);padding:12px 18px;border:1px solid var(--line);border-radius:18px;
+  background:rgba(5,8,22,.62);backdrop-filter:blur(18px);display:flex;justify-content:space-between;align-items:center}
+.brand{font-weight:800;letter-spacing:.08em;color:white}.brand span{color:var(--accent)}
+nav a{color:#cbd7ef;text-decoration:none;margin-left:18px;font-size:.9rem}nav a:hover{color:var(--accent)}
+section{width:min(1120px,92%);margin:auto;padding:110px 0 70px}
+.hero{min-height:100vh;display:grid;place-items:center;padding-top:130px}
+.hero-inner{max-width:850px;text-align:center}
+.pill{display:inline-flex;gap:9px;align-items:center;border:1px solid var(--line);background:rgba(12,22,48,.62);
+  padding:7px 12px;border-radius:999px;color:#b9c8e8;font-size:.82rem;backdrop-filter:blur(12px)}
+.dot{width:8px;height:8px;border-radius:50%;background:#65f5c0;box-shadow:0 0 18px #65f5c0}
+h1{font-size:clamp(3.4rem,9vw,7.8rem);line-height:.9;margin:25px 0 20px;letter-spacing:-.065em}
+.gradient{background:linear-gradient(90deg,#fff 10%,#62d8ff 48%,#9c7cff 85%);-webkit-background-clip:text;color:transparent}
+.hero p{font-size:1.15rem;color:var(--muted);max-width:700px;margin:0 auto}
+.actions{margin-top:30px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.btn{padding:12px 18px;border-radius:12px;text-decoration:none;font-weight:700;border:1px solid var(--line);color:white;background:rgba(20,32,64,.7)}
+.btn.primary{background:linear-gradient(135deg,#5cdcff,#7e6bff);color:#050816;border:0;box-shadow:0 10px 35px rgba(98,216,255,.2)}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px}
+.card{grid-column:span 6;border:1px solid var(--line);border-radius:22px;padding:24px;background:var(--panel);
+  backdrop-filter:blur(16px);box-shadow:0 20px 70px rgba(0,0,0,.22);transition:.35s transform,.35s border-color}
+.card:hover{transform:translateY(-7px) rotateX(1deg);border-color:rgba(98,216,255,.45)}
+.card.full{grid-column:1/-1}.card.third{grid-column:span 4}
+h2{font-size:2.2rem;margin-bottom:10px;letter-spacing:-.03em}.eyebrow{color:var(--accent);font-weight:800;text-transform:uppercase;letter-spacing:.15em;font-size:.75rem}
+.muted{color:var(--muted)}
+.skills{display:flex;flex-wrap:wrap;gap:9px;margin-top:18px}
+.skill{padding:8px 11px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.025);color:#dce7ff}
+.project{position:relative;overflow:hidden}.project:after{content:"";position:absolute;width:220px;height:220px;right:-80px;top:-80px;
+  background:radial-gradient(circle,rgba(98,216,255,.22),transparent 65%);pointer-events:none}
+.project h3{font-size:1.5rem;margin:7px 0}.project ul{padding-left:20px;color:#bcc8df}.project li{margin:7px 0}
+.meta{display:flex;justify-content:space-between;gap:20px;color:#8fa0c1;font-size:.9rem;margin-bottom:12px}
+.timeline{border-left:1px solid var(--line);padding-left:22px}.item{position:relative;margin:0 0 28px}.item:before{content:"";position:absolute;left:-28px;top:7px;width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 20px var(--accent)}
+.cert{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:15px 0;border-bottom:1px solid var(--line)}
+.cert:last-child{border-bottom:0}.badge{font-size:.78rem;padding:5px 8px;border-radius:8px;background:rgba(98,216,255,.1);color:var(--accent)}
+footer{padding:55px 5%;text-align:center;color:#7181a2;border-top:1px solid var(--line)}
+#sensor{position:fixed;right:18px;bottom:18px;z-index:15;padding:10px 13px;border:1px solid var(--line);border-radius:13px;
+background:rgba(7,12,29,.82);color:#b9c7e3;font-size:.78rem;backdrop-filter:blur(14px)}
+#sensor b{color:#65f5c0}
+@media(max-width:760px){nav{display:block;text-align:center}.brand{margin-bottom:5px}nav a{margin:0 7px;font-size:.75rem}.card,.card.third{grid-column:1/-1}section{padding-top:90px}}
+</style>
+</head>
+<body>
+<canvas id="scene"></canvas><div class="noise"></div>
+
+<nav>
+  <div class="brand">JAYANTH<span>•</span>REDDY</div>
+  <div>
+    <a href="#about">About</a><a href="#skills">Skills</a><a href="#projects">Projects</a>
+    <a href="#education">Education</a><a href="#certificates">Certificates</a><a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<div id="sensor">Motion AI: <b id="sensorState">mouse active</b></div>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="pill"><span class="dot"></span> COMPUTER SCIENCE • AI • IoT</div>
+    <h1><span class="gradient">Jayanth Reddy</span></h1>
+    <p>Computer Science & Engineering student building practical systems with Python, C, web technologies, databases, Arduino and IoT.</p>
+    <div class="actions">
+      <a class="btn primary" href="#projects">Explore my work</a>
+      <a class="btn" href="9547059051JR.pdf" target="_blank">View Python Certificate</a>
+      <a class="btn" href="https://github.com/jayanth09" target="_blank">GitHub ↗</a>
+      <a class="btn" href="https://linkedin.com/in/jayanth09" target="_blank">LinkedIn ↗</a>
+    </div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="grid">
+    <article class="card full">
+      <div class="eyebrow">01 / Profile</div><h2>Engineering with a practical mindset.</h2>
+      <p class="muted">Jayanth Reddy is pursuing a Bachelor of Technology in Computer Science and Engineering at Lovely Professional University. His portfolio combines programming fundamentals, web technologies, databases and hands-on IoT development.</p>
+    </article>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="grid">
+    <article class="card third"><div class="eyebrow">Languages</div><h2>Code</h2><div class="skills"><span class="skill">Python</span><span class="skill">C</span><span class="skill">C/C++</span></div></article>
+    <article class="card third"><div class="eyebrow">Technologies</div><h2>Build</h2><div class="skills"><span class="skill">HTML</span><span class="skill">CSS</span><span class="skill">JavaScript</span><span class="skill">Arduino UNO</span><span class="skill">Servo Motors</span><span class="skill">IoT</span><span class="skill">Blynk</span><span class="skill">Sensors</span></div></article>
+    <article class="card third"><div class="eyebrow">Data & People</div><h2>Grow</h2><div class="skills"><span class="skill">MySQL</span><span class="skill">MongoDB</span><span class="skill">Problem Solving</span><span class="skill">Team Collaboration</span><span class="skill">Adaptability</span></div></article>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="grid">
+    <article class="card full project">
+      <div class="meta"><span>FEATURED PROJECT</span><span>2026</span></div>
+      <div class="eyebrow">IoT / Signal Optimization</div>
+      <h3>IoT Antenna Positioning System</h3>
+      <ul>
+        <li>Developed an IoT-based antenna positioning system to automatically adjust antenna direction for optimal signal strength.</li>
+        <li>Integrated Arduino UNO with servo motors to control antenna movement in multiple directions.</li>
+        <li>Used sensors to collect signal-strength data and transmit it to the cloud for real-time monitoring.</li>
+        <li>Implemented a feedback mechanism to adjust antenna position for maximum signal optimization.</li>
+      </ul>
+      <div class="skills"><span class="skill">Arduino UNO</span><span class="skill">Servo Motors</span><span class="skill">IoT / Blynk</span><span class="skill">C/C++</span><span class="skill">Sensors</span></div>
+    </article>
+  </div>
+</section>
+
+<section id="education">
+  <div class="grid">
+    <article class="card full">
+      <div class="eyebrow">02 / Education</div><h2>Academic journey</h2>
+      <div class="timeline">
+        <div class="item"><h3>Lovely Professional University</h3><p class="muted">Bachelor of Technology — Computer Science and Engineering</p><p>CGPA: <b>7.62</b> · Phagwara, Punjab · 2025 – Present</p></div>
+        <div class="item"><h3>Cambridge Junior College</h3><p class="muted">Higher Secondary Education</p><p>Percentage: <b>97%</b> · Guntur, Andhra Pradesh · 2023 – 2025</p></div>
+        <div class="item"><h3>Mana Sasi High School</h3><p class="muted">Secondary Education</p><p>Percentage: <b>90.5%</b> · Prakasam, Andhra Pradesh · – 2023</p></div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section id="certificates">
+  <div class="grid">
+    <article class="card full">
+      <div class="eyebrow">03 / Credentials</div><h2>Certificates & training</h2>
+      <div class="cert"><div><b>C Language</b><br><span class="muted">Neo Browser</span></div><span class="badge">2026</span></div>
+      <div class="cert"><div><b>Basics of AI</b><br><span class="muted">Infosys Springboard</span></div><span class="badge">2026</span></div>
+      <div class="cert"><div><b>CS105: Introduction to Python</b><br><span class="muted">36 Hours · Score 90.52%</span></div><a class="btn" href="9547059051JR.pdf" target="_blank">Open certificate</a></div>
+      <div class="cert"><div><b>Python Tutoring - SPR</b><br><span class="muted">Lovely Professional University · Certificate · 2026</span></div><span class="badge">Training</span></div>
+    </article>
+  </div>
+</section>
+
+<section>
+  <div class="grid">
+    <article class="card full">
+      <div class="eyebrow">04 / Achievements</div><h2>Progress that compounds.</h2>
+      <ul style="padding-left:20px" class="muted">
+        <li>Successfully completed Python programming training and strengthened core programming fundamentals.</li>
+        <li>Consistently practiced programming problems to improve logical thinking and problem-solving ability.</li>
+        <li>Maintained strong academic performance with a CGPA of 7.62 in B.Tech Computer Science and Engineering.</li>
+      </ul>
+    </article>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="grid">
+    <article class="card full" style="text-align:center">
+      <div class="eyebrow">05 / Connect</div><h2>Let's build something useful.</h2>
+      <p class="muted">Email: <a href="mailto:jayanth81256@gmail.com" style="color:var(--accent)">jayanth81256@gmail.com</a> · Mobile: +91 8121569646</p>
+      <div class="actions">
+        <a class="btn primary" href="mailto:jayanth81256@gmail.com">Email Jayanth</a>
+        <a class="btn" href="https://github.com/jayanth09" target="_blank">GitHub</a>
+        <a class="btn" href="https://linkedin.com/in/jayanth09" target="_blank">LinkedIn</a>
+      </div>
+    </article>
+  </div>
+</section>
+
+<footer>© 2026 Jayanth Reddy · AI × IoT Portfolio</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const canvas=document.getElementById('scene');
+const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth,innerHeight);
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(55,innerWidth/innerHeight,.1,100);
+camera.position.z=8;
+
+const group=new THREE.Group(); scene.add(group);
+const geo=new THREE.IcosahedronGeometry(2.15,2);
+const mat=new THREE.MeshBasicMaterial({wireframe:true,transparent:true,opacity:.18});
+const core=new THREE.Mesh(geo,mat); group.add(core);
+
+const count=1400, pos=new Float32Array(count*3);
+for(let i=0;i<count;i++){
+  const r=3.5+Math.random()*5, a=Math.random()*Math.PI*2, b=Math.acos(2*Math.random()-1);
+  pos[i*3]=r*Math.sin(b)*Math.cos(a); pos[i*3+1]=r*Math.sin(b)*Math.sin(a); pos[i*3+2]=r*Math.cos(b);
+}
+const pg=new THREE.BufferGeometry();pg.setAttribute('position',new THREE.BufferAttribute(pos,3));
+const pm=new THREE.PointsMaterial({size:.018,transparent:true,opacity:.7});
+const particles=new THREE.Points(pg,pm);scene.add(particles);
+
+let tx=0,ty=0,mx=0,my=0;
+addEventListener('pointermove',e=>{mx=(e.clientX/innerWidth-.5)*2;my=(e.clientY/innerHeight-.5)*2});
+async function enableMotion(){
+  try{
+    if(typeof DeviceOrientationEvent!=='undefined' && typeof DeviceOrientationEvent.requestPermission==='function'){
+      const p=await DeviceOrientationEvent.requestPermission();
+      if(p!=='granted') throw 0;
+    }
+    addEventListener('deviceorientation',e=>{
+      if(e.beta!=null){tx=Math.max(-1,Math.min(1,e.gamma/35));ty=Math.max(-1,Math.min(1,(e.beta-45)/35))}
+      document.getElementById('sensorState').textContent='gyro active';
+    });
+  }catch(e){ document.getElementById('sensorState').textContent='mouse active'; }
+}
+enableMotion();
+
+function animate(){
+  requestAnimationFrame(animate);
+  group.rotation.y += .0018; particles.rotation.y -= .00025;
+  group.rotation.x += ((ty*.35)-group.rotation.x)*.025;
+  group.rotation.y += ((tx*.5)-group.rotation.y)*.018;
+  camera.position.x += ((mx*.55)-camera.position.x)*.025;
+  camera.position.y += ((-my*.35)-camera.position.y)*.025;
+  camera.lookAt(0,0,0); renderer.render(scene,camera);
+}
+animate();
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
+</script>
+</body>
+</html>
